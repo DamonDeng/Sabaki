@@ -5,10 +5,7 @@ class Drawer extends Component {
     render({type, show, children}) {
         return h('section', {
             id: type,
-            class: classNames({
-                drawer: true,
-                show
-            })
+            class: classNames('drawer', {show})
         }, children)
     }
 }
