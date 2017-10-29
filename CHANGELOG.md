@@ -2,6 +2,30 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Sabaki v0.31.5][v0.31.5] (2017-10-31)
+
+**Changed**
+
+* Pre-fill date field in new games with current date
+* In the info drawer, show game result after user's affirmation
+* Inactive nodes in the game tree get comment and hotspot coloring (Thanks to [@geovens](https://github.com/geovens))
+* Update to Electron v1.7.9
+
+**Fixed**
+
+* Clicking 'Download Update' button opens the correct URL
+
+## [Sabaki v0.31.4][v0.31.4] (2017-09-27)
+
+**Changed**
+
+* When selecting engines, player names are automatically filled unless changed by the user
+* Downgrade to stable Electron v1.7.8 due to security reasons
+
+**Fixed**
+
+* Fix encoding problems in shape names
+
 ## [Sabaki v0.31.3][v0.31.3] (2017-09-19)
 
 **Changed**
@@ -589,7 +613,9 @@ All notable changes to this project will be documented in this file.
 
 First release
 
-[unreleased]: https://github.com/yishn/Sabaki/compare/v0.31.3...master
+[unreleased]: https://github.com/yishn/Sabaki/compare/v0.31.5...master
+[v0.31.5]: https://github.com/yishn/Sabaki/compare/v0.31.4...v0.31.5
+[v0.31.4]: https://github.com/yishn/Sabaki/compare/v0.31.3...v0.31.4
 [v0.31.3]: https://github.com/yishn/Sabaki/compare/v0.31.2...v0.31.3
 [v0.31.2]: https://github.com/yishn/Sabaki/compare/v0.31.1...v0.31.2
 [v0.31.1]: https://github.com/yishn/Sabaki/compare/v0.31.0...v0.31.1
