@@ -14,6 +14,16 @@ if (process.platform === 'darwin') {
         process.env.PATH = result.trim().split('\n')
             .map(x => x.split('='))
             .find(x => x[0] === 'PATH')[1]
+
+        // a dirty fix to resolve the problem of calling python script in GTP engine 
+        process.env.PYTHONPATH = result.trim().split('\n')
+        .map(x => x.split('='))
+        .find(x => x[0] === 'PYTHONPATH')[1]
+    
+        // a dirty fix to resolve the problem of calling FueGo 
+        process.env.DYLD_LIBRARY_PATH = result.trim().split('\n')
+            .map(x => x.split('='))
+            .find(x => x[0] === 'DYLD_LIBRARY_PATH')[1]
     })
 }
 
