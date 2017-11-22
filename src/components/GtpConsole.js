@@ -56,7 +56,7 @@ class ConsoleResponseEntry extends Component {
                     class: response.internal ? 'internal' : '',
                     board,
                     dangerouslySetInnerHTML: {
-                        __html: helper.htmlify(response.content
+                        __html: helper.htmlify((response.content + response.comment)
                             .replace(/</g, '&lt;').replace(/>/g, '&gt;'))
                     }
                 })

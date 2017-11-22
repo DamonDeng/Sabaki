@@ -43,7 +43,7 @@ exports.parseCommand = function(input) {
 
 exports.parseResponse = function(input) {
     input = input.replace(/\t/g, ' ').trim()
-    let error = input[0] !== '='
+    let error = (input[0] !== '=' && input[0] !== '#')  
     let hasId = input.length >= 2 && input[1] !== ' '
 
     input = input.substr(1)

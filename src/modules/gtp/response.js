@@ -6,6 +6,21 @@ class Response {
         this.content = content
         this.error = !!error
         this.internal = !!internal
+        this.comment = ''
+    }
+
+    setComment(inputComment){
+        
+        for(var i=0; i<inputComment.length; i++){
+            this.comment = this.comment + '\n' + inputComment[i]
+            
+        }
+
+    
+    }
+
+    getComment(){
+        return this.comment
     }
 
     toString() {

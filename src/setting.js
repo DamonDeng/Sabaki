@@ -54,7 +54,7 @@ let defaults = {
         'loadsgf', 'komi'
     ],
     'console.max_history_count': 100,
-    'debug.dev_tools': false,
+    'debug.dev_tools': true,
     'edit.click_currentvertex_to_remove': true,
     'edit.show_removenode_warning': true,
     'edit.show_removeothervariations_warning': true,

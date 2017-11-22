@@ -36,21 +36,50 @@ class Controller extends EventEmitter {
         })
 
         this.process.stdout.on('data', data => {
-            this._outBuffer += (data + '').replace(/\r/g, '').replace(/#.*?\n/g, '').replace(/\t/g, ' ')
-
-            let start = this._outBuffer.indexOf('\n\n')
+            
+            //this._outBuffer += (data + '').replace(/\r/g, '').replace(/#.*?\n/g, '').replace(/\t/g, ' ')
+            this._outBuffer += (data + '').replace(/\r/g, '').replace(/\t/g, ' ')
+            
+            let start = this._outBuffer.indexOf('\n')
+            let commentArray=[]
 
             while (start !== -1) {
-                let response = gtp.parseResponse(this._outBuffer.substr(0, start))
-                this._outBuffer = this._outBuffer.substr(start + 2)
+                if (this._outBuffer[0] == '#'){
+                    
 
-                if (this.commands.length > 0) {
-                    let command = this.commands.shift()
-                    this.emit(`response-${command.internalId}`, {response, command})
+                    // re-compute the start pointer as comment may not follow the protocol to use double \n
+                    start = this._outBuffer.indexOf('\n')
+                    //let response = gtp.parseResponse(this._outBuffer.substr(0, start))
+                    commentArray.push(this._outBuffer.substr(0, start))
+                    this._outBuffer = this._outBuffer.substr(start + 1)
+
+                    start = this._outBuffer.indexOf('\n')
+                    
+                }else if (this._outBuffer[0] == '=' || this._outBuffer[0] == '?'){
+                    let response = gtp.parseResponse(this._outBuffer.substr(0, start))
+                    
+                    response.setComment(commentArray)
+                    commentArray = []
+                    this._outBuffer = this._outBuffer.substr(start + 1)
+    
+                    if (this.commands.length > 0) {
+                        let command = this.commands.shift()
+                        this.emit(`response-${command.internalId}`, {response, command})
+                    }
+
+                    start = this._outBuffer.indexOf('\n')
+                }else{
+                    
+                    this._outBuffer = this._outBuffer.substr(start + 1)
+                    start = this._outBuffer.indexOf('\n')
                 }
+                
 
-                start = this._outBuffer.indexOf('\n\n')
+                
+               
             }
+
+            // window.alert('end of the loop of on data')
         })
 
         this.process.stderr.on('data', data => {
