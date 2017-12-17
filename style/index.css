@@ -160,6 +160,7 @@ header, #bar .bar {
         filter: invert(100%);
     }
     .edit #bar { background: #C4BD64; }
+    .analyst #bar { background: #C4BD64; }
     .scoring #bar, .estimator #bar { background: #C42311; }
     .find #bar { background: #0050C0; }
     .guess #bar { background: #823499; }
@@ -255,6 +256,44 @@ header, #bar .bar {
         height: 20px;
         margin-left: -10px;
         margin-top: -10px;
+}
+
+#analyst {
+    color: #333;
+}
+#analyst ul {
+    display: table;
+    margin: 0 auto;
+    overflow: hidden;
+    list-style: none;
+}
+#analyst ul li {
+    margin: 0 2px;
+    float: left;
+}
+#analyst ul li a {
+    position: relative;
+    display: block;
+    height: 40px;
+    width: 35px;
+}
+.analyst #analyst ul li a:hover {
+    background: #B3AC53;
+}
+.analyst #analyst ul li a:active {
+    background: #8E851B;
+}
+.analyst #analyst ul li.selected a {
+    background: #9F962C;
+}
+#analyst ul li a img {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin-left: -10px;
+    margin-top: -10px;
 }
 
 #autoplay label {

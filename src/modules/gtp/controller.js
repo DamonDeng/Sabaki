@@ -4,6 +4,7 @@ const EventEmitter = require('events')
 
 const gtp = require('./index')
 const helper = require('../helper')
+const logger = require('electron').remote.require('./logger')
 
 class Controller extends EventEmitter {
     constructor(engine) {
@@ -50,7 +51,11 @@ class Controller extends EventEmitter {
                     // re-compute the start pointer as comment may not follow the protocol to use double \n
                     start = this._outBuffer.indexOf('\n')
                     //let response = gtp.parseResponse(this._outBuffer.substr(0, start))
-                    commentArray.push(this._outBuffer.substr(0, start))
+                    
+                    //display comment in console log, instead of gtp console window
+                    logger.log(this._outBuffer.substr(0, start))
+                    // commentArray.push(this._outBuffer.substr(0, start))
+
                     this._outBuffer = this._outBuffer.substr(start + 1)
 
                     start = this._outBuffer.indexOf('\n')

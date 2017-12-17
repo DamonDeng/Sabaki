@@ -3,8 +3,9 @@ const classNames = require('classnames')
 
 const Bar = require('./Bar')
 const helper = require('../../modules/helper')
+const logger = require('electron').remote.require('./logger')
 
-class EditBar extends Component {
+class AnalystBar extends Component {
     constructor() {
         super()
 
@@ -24,7 +25,7 @@ class EditBar extends Component {
     }
 
     shouldComponentUpdate(nextProps) {
-        return nextProps.mode !== this.props.mode || nextProps.mode === 'edit'
+        return nextProps.mode !== this.props.mode || nextProps.mode === 'analyst'
     }
 
     handleToolButtonClick(evt) {
@@ -57,20 +58,21 @@ class EditBar extends Component {
     }
 
     render({selectedTool}, {stoneTool}) {
+        // logger.log("trying to render Analyst bar .......")
         let isSelected = ([, id]) => id.replace(/_-?1$/, '') === selectedTool.replace(/_-?1$/, '')
 
-        return h(Bar, Object.assign({type: 'edit'}, this.props),
+        return h(Bar, Object.assign({type: 'analyst'}, this.props),
             h('ul', {},
                 [
-                    ['Stone Tool', `stone_${stoneTool}`],
-                    ['Cross Tool', 'cross'],
-                    ['Triangle Tool', 'triangle'],
-                    ['Square Tool', 'square'],
-                    ['Circle Tool', 'circle'],
-                    ['Line Tool', 'line'],
-                    ['Arrow Tool', 'arrow'],
-                    ['Label Tool', 'label'],
-                    ['Number Tool', 'number']
+                    ['Analyst Stone Tool', `stone_${stoneTool}`],
+                    ['Analyst Cross Tool', 'cross'],
+                    ['Analyst Triangle Tool', 'triangle'],
+                    ['Analyst Square Tool', 'square'],
+                    ['Analyst Circle Tool', 'circle'],
+                    ['Analyst Line Tool', 'line'],
+                    ['Analyst Arrow Tool', 'arrow'],
+                    ['Analyst Label Tool', 'label'],
+                    ['Analyst Number Tool', 'number']
                 ].map(x =>
                     this.renderButton(...x, isSelected(x))
                 )
@@ -79,4 +81,4 @@ class EditBar extends Component {
     }
 }
 
-module.exports = EditBar
+module.exports = AnalystBar

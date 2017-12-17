@@ -350,7 +350,7 @@ class App extends Component {
         }
 
         this.setState(stateChange)
-        this.events.emit('modeChange')
+        // this.events.emit('modeChange')
     }
 
     openDrawer(drawer) {
@@ -638,7 +638,7 @@ class App extends Component {
         } else if (this.state.mode === 'edit') {
             if (ctrlKey) {
                 // Add coordinates to comment
-
+                
                 let coord = board.vertex2coord(vertex)
                 let commentText = node.C ? node.C[0] : ''
 
@@ -742,9 +742,22 @@ class App extends Component {
                 blockedGuesses.push(...blocked)
                 this.setState({blockedGuesses})
             }
+        } else if (this.state.mode === 'analyst') {
+            
+
+            if (button === 2) {
+                // Right mouse click, play white stone
+                this.analystPlay(vertex, 'W')
+                
+            } else {
+                // Let mouse click, play black stone
+                this.analystPlay(vertex, 'B')
+            }
+
+            
         }
 
-        this.events.emit('vertexClick')
+        // this.events.emit('vertexClick')
     }
 
     makeMove(vertex, {player = null, clearUndoPoint = true, sendToEngine = false} = {}) {
@@ -892,7 +905,7 @@ class App extends Component {
         // Clear undo point
 
         if (createNode && clearUndoPoint) this.clearUndoPoint()
-
+        
         // Enter scoring mode after two consecutive passes
 
         let enterScoring = false
@@ -2071,6 +2084,179 @@ class App extends Component {
         }
 
         this.setBusy(false)
+    }
+
+    analystPlay(vertex, color){
+
+        let [tree, index] = this.state.treePosition
+        let board = gametree.getBoard(tree, index)
+
+        if (typeof vertex == 'string') {
+            vertex = board.coord2vertex(vertex)
+        }
+
+        let pass = !board.hasVertex(vertex)
+        if (!pass && board.get(vertex) !== 0) return
+
+        let prev = gametree.navigate(tree, index, -1)
+        // if (!player) player = this.inferredState.currentPlayer
+
+        let capture = false, suicide = false, ko = false
+        let createNode = true
+
+        if (!pass) {
+            // Check for ko
+
+            // if (prev && setting.get('game.show_ko_warning')) {
+            //     let hash = board.makeMove(player, vertex).getPositionHash()
+
+            //     ko = prev[0].nodes[prev[1]].board.getPositionHash() == hash
+
+            //     if (ko && dialog.showMessageBox(
+            //         ['You are about to play a move which repeats a previous board position.',
+            //         'This is invalid in some rulesets.'].join('\n'),
+            //         'info',
+            //         ['Play Anyway', 'Don’t Play'], 1
+            //     ) != 0) return
+            // }
+
+            let vertexNeighbors = board.getNeighbors(vertex)
+
+            // Check for suicide
+
+            // capture = vertexNeighbors
+            //     .some(v => board.get(v) == -player && board.getLiberties(v).length == 1)
+
+            // suicide = !capture
+            // && vertexNeighbors.filter(v => board.get(v) == player)
+            //     .every(v => board.getLiberties(v).length == 1)
+            // && vertexNeighbors.filter(v => board.get(v) == 0).length == 0
+
+            // if (suicide && setting.get('game.show_suicide_warning')) {
+            //     if (dialog.showMessageBox(
+            //         ['You are about to play a suicide move.',
+            //         'This is invalid in some rulesets.'].join('\n'),
+            //         'info',
+            //         ['Play Anyway', 'Don’t Play'], 1
+            //     ) != 0) return
+            // }
+
+            // Animate board
+
+            this.setState({animatedVertex: vertex})
+        }
+
+        // Update data
+
+        let nextTreePosition
+
+        if (tree.subtrees.length === 0 && tree.nodes.length - 1 === index) {
+            // Append move
+
+            let node = {}
+            node[color] = [sgf.vertex2point(vertex)]
+            tree.nodes.push(node)
+
+            nextTreePosition = [tree, tree.nodes.length - 1]
+        } else {
+            if (index !== tree.nodes.length - 1) {
+                // Search for next move
+
+                let nextNode = tree.nodes[index + 1]
+                let moveExists = color in nextNode
+                    && helper.vertexEquals(sgf.point2vertex(nextNode[color][0]), vertex)
+
+                if (moveExists) {
+                    nextTreePosition = [tree, index + 1]
+                    createNode = false
+                }
+            } else {
+                // Search for variation
+
+                let variations = tree.subtrees.filter(subtree => {
+                    return subtree.nodes.length > 0
+                        && color in subtree.nodes[0]
+                        && helper.vertexEquals(sgf.point2vertex(subtree.nodes[0][color][0]), vertex)
+                })
+
+                if (variations.length > 0) {
+                    nextTreePosition = [variations[0], 0]
+                    createNode = false
+                }
+            }
+
+            if (createNode) {
+                // Create variation
+
+                let updateRoot = tree.parent == null
+                let splitted = gametree.split(tree, index)
+                let newTree = gametree.new()
+                let node = {[color]: [sgf.vertex2point(vertex)]}
+
+                newTree.nodes = [node]
+                newTree.parent = splitted
+
+                splitted.subtrees.push(newTree)
+                splitted.current = splitted.subtrees.length - 1
+
+                if (updateRoot) {
+                    let {gameTrees} = this.state
+                    gameTrees[gameTrees.indexOf(tree)] = splitted
+                }
+
+                nextTreePosition = [newTree, 0]
+            }
+        }
+
+        this.setCurrentTreePosition(...nextTreePosition)
+
+        // Play sounds
+
+        if (!pass) {
+            let delay = setting.get('sound.capture_delay_min')
+            delay += Math.floor(Math.random() * (setting.get('sound.capture_delay_max') - delay))
+
+            if (capture || suicide)
+                sound.playCapture(delay)
+
+            sound.playPachi()
+        } else {
+            sound.playPass()
+        }
+
+        // Clear undo point
+
+        if (createNode) this.clearUndoPoint()
+
+        // Enter scoring mode after two consecutive passes
+
+
+        // Emit event
+
+        // this.events.emit('moveMake', {pass, capture, suicide, ko, enterScoring})
+
+        let blackController = this.attachedEngineControllers[0]
+        let whiteController = this.attachedEngineControllers[1]
+        let targetController = null;
+
+        if (blackController == null){
+            if (whiteController == null){
+                return
+            }else{
+                targetController = whiteController
+            }
+        }else{
+            targetController = blackController
+        }
+
+        let point = board.vertex2coord(vertex)
+
+        this.setBusy(true)
+
+        this.sendGTPCommand(targetController, new gtp.Command(null, 'play', color, point), ({response}) => {
+            this.setBusy(false)
+        })
+
     }
 
     startGeneratingMoves({passPlayer = null, followUp = false} = {}) {

@@ -3,6 +3,7 @@ const {h, Component} = require('preact')
 const Goban = require('./Goban')
 const PlayBar = require('./bars/PlayBar')
 const EditBar = require('./bars/EditBar')
+const AnalystBar = require('./bars/AnalystBar')
 const GuessBar = require('./bars/GuessBar')
 const AutoplayBar = require('./bars/AutoplayBar')
 const ScoringBar = require('./bars/ScoringBar')
@@ -189,6 +190,12 @@ class MainView extends Component {
                 }),
 
                 h(EditBar, {
+                    mode,
+                    selectedTool,
+                    onToolButtonClick: this.handleToolButtonClick
+                }),
+
+                h(AnalystBar, {
                     mode,
                     selectedTool,
                     onToolButtonClick: this.handleToolButtonClick

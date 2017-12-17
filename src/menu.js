@@ -219,6 +219,26 @@ let data = [
         ]
     },
     {
+        label: '&BotAnalyst',
+        submenu: [
+            {
+                label: 'Toggle &BotAnalyst Mode',
+                accelerator: 'CmdOrCtrl+B',
+                click: () => sabaki.setMode(sabaki.state.mode === 'analyst' ? 'play' : 'analyst')
+            },
+            {
+                label: 'Clean &Markup…',
+                click: () => sabaki.openDrawer('cleanmarkup')
+            },
+          
+            {type: 'separator'},
+            {
+                label: '&Copy Variation',
+                click: () => sabaki.copyVariation(...treePosition())
+            }
+        ]
+    },
+    {
         label: 'Fin&d',
         submenu: [
             {
